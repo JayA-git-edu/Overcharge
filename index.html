@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overcharge</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="screen screen-start" id="start-screen">
+      <div class="start-card animated-border">
+        <div class="start-header">
+          <div class="brand-title">Overcharge</div>
+          <div class="brand-subtitle">Run hot. Strike harder. Survive the redline.</div>
+        </div>
+        <section class="control-menu">
+          <div class="control-group">
+            <label for="mode-select">Mode</label>
+            <select id="mode-select">
+              <option value="ai" selected>Vs Computer</option>
+              <option value="pvp">PvP Hotseat</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="player-count">Players</label>
+            <select id="player-count">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Loadout</label>
+            <button class="ghost-button" id="deck-builder-button">Deck Builder</button>
+          </div>
+          <div class="control-group">
+            <label>Stats</label>
+            <button class="ghost-button" id="stats-button">Stats</button>
+          </div>
+        </section>
+        <div class="start-players" id="start-players"></div>
+        <div class="end-actions">
+          <button class="ghost-button" id="continue-run">Continue Match</button>
+          <button class="control-button" id="start-run">Play</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="game" id="game">
+      <header class="top-bar animated-border">
+        <div class="brand">
+          <div class="brand-title">Overcharge</div>
+          <div class="brand-subtitle">Run hot. Strike harder. Survive the redline.</div>
+        </div>
+        <div class="top-controls">
+          <div class="turn-pill" id="turn-pill">Turn 1</div>
+          <div class="control-actions">
+            <button class="ghost-button" id="info-button">Info</button>
+            <button class="ghost-button" id="settings-button">Settings</button>
+            <button class="ghost-button" id="deck-button">Deck</button>
+            <button class="ghost-button" id="stats-button-top">Stats</button>
+            <button class="ghost-button" id="restart-button">Restart</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="enemy-area animated-border">
+        <div class="enemy-info">
+          <div class="enemy-name" id="enemy-name">Sentinel Drone</div>
+          <div class="hp-bar">
+            <div class="hp-fill" id="enemy-hp-fill"></div>
+            <div class="hp-text" id="enemy-hp-text">HP 0/0</div>
+          </div>
+        </div>
+        <div class="enemy-display">
+          <div class="enemy-intent" id="enemy-intent">Intent</div>
+          <div class="target-row hidden" id="target-row">
+            <label for="target-select">Target</label>
+            <select id="target-select"></select>
+          </div>
+          <div class="enemy-sprite">
+            <div class="sprite-core"></div>
+            <div class="sprite-ring"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="arena animated-border">
+        <div class="vfx-layer" id="vfx-layer"></div>
+        <div class="battle-log" id="battle-log"></div>
+      </section>
+
+      <footer class="player-area">
+        <aside class="player-panel animated-border">
+          <div class="player-stat">
+            <div class="stat-label">HP</div>
+            <div class="stat-value" id="player-hp">0/0</div>
+          </div>
+          <div class="player-stat">
+            <div class="stat-label">Armor</div>
+            <div class="stat-value" id="player-armor">0</div>
+          </div>
+          <div class="player-stat">
+            <div class="stat-label">Deck</div>
+            <div class="stat-value" id="deck-count">0</div>
+          </div>
+          <div class="player-stat">
+            <div class="stat-label">Discard</div>
+            <button class="stat-button" id="discard-button">0</button>
+          </div>
+          <div class="player-stat">
+            <div class="stat-label">Modules</div>
+            <div class="stat-value" id="module-list">None</div>
+          </div>
+          <div class="discard-preview">
+            <div class="preview-title">Discard</div>
+            <div class="preview-list" id="discard-preview-list"></div>
+          </div>
+        </aside>
+
+        <section class="hand" id="hand"></section>
+
+        <aside class="meters animated-border">
+          <div class="energy">
+            <div class="meter-label">Energy</div>
+            <div class="energy-row" id="energy-row"></div>
+            <div class="energy-text" id="energy-text">0</div>
+          </div>
+
+          <div class="heat">
+            <div class="meter-label">Heat</div>
+            <div class="heat-bar">
+              <div class="heat-fill" id="heat-fill"></div>
+            </div>
+            <div class="heat-text" id="heat-text">0 / 10</div>
+          </div>
+
+          <button class="end-turn" id="end-turn">End Turn</button>
+        </aside>
+      </footer>
+    </div>
+
+    <div class="modal hidden" id="discard-modal">
+      <div class="modal-card animated-border">
+        <div class="modal-header">
+          <div class="modal-title">Discard Pile</div>
+          <button class="ghost-button" data-close>Close</button>
+        </div>
+        <div class="modal-body" id="discard-list"></div>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="info-modal">
+      <div class="modal-card animated-border">
+        <div class="modal-header">
+          <div class="modal-title">How to Play</div>
+          <button class="ghost-button" data-close>Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-section" id="how-to-play"></div>
+          <div class="info-section" id="card-catalog"></div>
+          <div class="info-section" id="enemy-catalog"></div>
+          <div class="info-section" id="audio-credits"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="settings-modal">
+      <div class="modal-card animated-border">
+        <div class="modal-header">
+          <div class="modal-title">Settings</div>
+          <button class="ghost-button" data-close>Close</button>
+        </div>
+        <div class="modal-body settings-grid">
+          <label class="setting-row">
+            <span>Sound</span>
+            <select id="setting-sound">
+              <option value="on" selected>On</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Music</span>
+            <select id="setting-music">
+              <option value="on" selected>On</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Music Volume</span>
+            <input id="setting-music-volume" type="range" min="0" max="100" value="40" />
+          </label>
+          <label class="setting-row">
+            <span>Optimization</span>
+            <select id="setting-optimization">
+              <option value="full" selected>Full Effects</option>
+              <option value="reduced">Reduce Motion</option>
+              <option value="minimal">Minimal</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Card Size</span>
+            <select id="setting-card-size">
+              <option value="small">Small</option>
+              <option value="medium" selected>Medium</option>
+              <option value="large">Large</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Font Size</span>
+            <select id="setting-font-size">
+              <option value="small">Small</option>
+              <option value="medium" selected>Medium</option>
+              <option value="large">Large</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Auto End After 5m Idle</span>
+            <select id="setting-auto-end">
+              <option value="on" selected>On</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Confirm End Turn</span>
+            <select id="setting-confirm-end">
+              <option value="on" selected>On</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Difficulty</span>
+            <select id="setting-difficulty">
+              <option value="easy">Easy</option>
+              <option value="normal" selected>Normal</option>
+              <option value="hard">Hard</option>
+              <option value="brutal">Brutal</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Theme</span>
+            <select id="setting-theme">
+              <option value="dark" selected>Dark</option>
+              <option value="light">Light</option>
+              <option value="neon">Neon</option>
+              <option value="dusk">Dusk</option>
+              <option value="solar">Solar</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span>Contrast</span>
+            <select id="setting-contrast">
+              <option value="normal" selected>Normal</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="deck-modal">
+      <div class="modal-card animated-border">
+        <div class="modal-header">
+          <div class="modal-title">Deck Viewer</div>
+          <button class="ghost-button" data-close>Close</button>
+        </div>
+        <div class="modal-body">
+          <label class="setting-row">
+            <span>Filter</span>
+            <select id="deck-filter">
+              <option value="all" selected>All</option>
+              <option value="attack">Attack</option>
+              <option value="shield">Shield</option>
+              <option value="module">Module</option>
+              <option value="vent">Vent</option>
+            </select>
+          </label>
+          <div class="deck-columns">
+            <div>
+              <h3>Draw Pile</h3>
+              <div class="deck-list" id="draw-list"></div>
+            </div>
+            <div>
+              <h3>Discard</h3>
+              <div class="deck-list" id="deck-discard-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="deck-builder-modal">
+      <div class="modal-card animated-border">
+        <div class="modal-header">
+          <div class="modal-title">Deck Builder</div>
+          <button class="ghost-button" data-close>Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="builder-note">Pick up to 8 bonus cards to add to your base deck.</div>
+          <label class="setting-row">
+            <span>Preset</span>
+            <select id="preset-select">
+              <option value="balanced" selected>Balanced</option>
+              <option value="aggression">Aggression</option>
+              <option value="fortress">Fortress</option>
+              <option value="overclock">Overclock</option>
+              <option value="coolant">Coolant</option>
+            </select>
+          </label>
+          <select id="deck-builder" multiple size="12"></select>
+          <div class="end-actions">
+            <button class="ghost-button" id="deck-clear">Clear</button>
+            <button class="control-button" id="deck-save">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="stats-modal">
+      <div class="modal-card animated-border">
+        <div class="modal-header">
+          <div class="modal-title">Run Stats</div>
+          <button class="ghost-button" data-close>Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="stats-grid" id="stats-grid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal hidden" id="end-modal">
+      <div class="modal-card animated-border end-card">
+        <div class="modal-header">
+          <div class="modal-title" id="end-title">YOU WIN!!</div>
+          <button class="ghost-button" data-close>Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="end-message" id="end-message"></div>
+          <div class="end-actions">
+            <button class="control-button" id="play-again">Play Again</button>
+            <button class="ghost-button" id="back-to-menu">Back to Menu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
